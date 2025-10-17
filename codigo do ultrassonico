@@ -1,0 +1,45 @@
+#define trigPin 7 // Declara constante trigPin
+#define echoPin 8 // Declara constante como echoPin
+ 
+int Buzzer = 13; // Inicializa buzzer no pino 13
+long duration; // Usar long para duration, pois pode ser um valor maior
+float distance_mm; // Usar float para distance_mm para maior precisão
+ 
+void setup() {
+ Serial.begin (9600);
+ pinMode(trigPin, OUTPUT);
+ pinMode(echoPin, INPUT);
+ pinMode(Buzzer, OUTPUT); // Manter o pino do Buzzer como OUTPUT caso queira usar para outra coisa, mas não será ativado.
+ digitalWrite(Buzzer, LOW); // Garante que o buzzer esteja desligado no início
+}
+ 
+void loop() {
+ // Limpa o trigPin
+ digitalWrite(trigPin, LOW);
+ delayMicroseconds(2);
+ // Define o trigPin em estado HIGH por 10 microssegundos
+ digitalWrite(trigPin, HIGH);
+ delayMicroseconds(10);
+ digitalWrite(trigPin, LOW);
+ 
+ // Lê o echoPin, retorna a duração da onda sonora em microssegundos
+ duration = pulseIn(echoPin, HIGH);
+ 
+ // Calcula a distância em milímetros
+ // Simplificando, dividimos por 2.91 para obter mm diretamente:
+ distance_mm = (duration / 2) / 2.91;
+ 
+ // Exibe a distância no Monitor Serial
+ Serial.print("Distância: ");
+ if (distance_mm > 0 && distance_mm < 4000) { // Limite superior para evitar leituras errôneas muito altas
+ Serial.print(distance_mm);
+ Serial.println(" mm");
+ } else {
+ Serial.println("Fora de alcance"); // Mensagem para leituras inválidas ou fora do range
+ }
+ 
+ // O buzzer permanece desligado
+ digitalWrite(Buzzer, LOW);
+ 
+ delay(100); // Pequeno atraso para estabilizar as leituras e não sobrecarregar o Serial Monitor
+}
